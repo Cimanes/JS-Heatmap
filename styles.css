@@ -1,0 +1,105 @@
+:root {
+  /* Define colors and sizes here for quick reference */
+  --bgColor:      #666;
+  --contColor:    #bbb;
+  --titleColor:   #111;
+  --labelColor:   #029;
+  --tickColor:    #006;
+  --overlayColor: #228;
+  --tipColor:     #fff;
+  --legendColor:  #eee;
+  --axisColor:    #999;
+  --contWidth:    1200px;   /*Container - Compare with .js file*/
+  --contHeight:    750px;   /*Container - Compare with .js file*/
+  --legendWidth:   300px;   /*legend (palette) - Compare with .js file*/
+  --legendHeight:  60px;    /*legend (palette) - Compare with .js file*/
+}
+
+* { margin: 0; padding: 0;}
+
+.main {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial';
+  background-color: var(--bgColor);
+}
+
+.container {
+  width: var(--contWidth);
+  height: var(--contHeight);
+  background-color: var(--contColor);
+  flex-direction: column;
+  padding: 20px 10px 10px 0px;
+}
+
+@media (min-width: 500px) {
+  .main .container {
+    box-shadow: 2px 2px 20px;
+  }
+}
+
+#title {
+  text-align: center;
+  font-size: 1.7em;
+  font-weight: 600;
+  color: rgb(40, 40, 40);
+}
+#description {
+  text-align: center;
+  font-size: 1.3em;
+  font-weight: 400;
+  color: rgb(60, 60, 60);
+}
+
+#chart {
+  position: relative;
+  left: 40px;
+  top: 20px;
+}
+
+#legend {
+  position: relative;
+  top: 40px;
+  margin: auto;  
+  width: var(--legendWidth);
+  background: var(--legendColor);
+  border-radius: 8px;
+  padding: 10px;
+  height: var(--legendHeight);
+}
+
+/* .cell { stroke: #000; } */
+
+#tooltip {
+  position: absolute;
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  background: var(--tipColor);
+  border-radius: 7px;
+  opacity: 0;
+  pointer-events: none;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#y-axis path, #x-axis path {
+  stroke: var(--tickColor);
+  stroke-width: 1;
+  fill: var(--axisColor);
+}
+
+#y-axis text, #x-axis text {
+  color: var(--tickColor);
+}
+
+.Label {
+  font-size: 1.0em;
+  font-weight: bold;
+  fill: var(--labelColor);
+  color: var(--labelColor);
+  text-align: center;
+  margin-bottom: 5px;
+}
