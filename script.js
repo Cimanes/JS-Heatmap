@@ -1,25 +1,23 @@
+// =====================
+// Discrete color palette
+// color source: https://colorbrewer2.org/#type=diverging&scheme=Spectral&n=10
+// Other options to explore:
+//   colorCont = d3.scaleSequential(d3.interpolateRdYlBu),
+//   colorDiscrete = d3.scaleOrdinal(d3.schemeRdYlBu);
+// =====================
+
 const 
   hMargin = 70,       // Horizontal margin - Compare with "width" and "container".
   vMargin = 40,       // Vertical margin - compare with "height" and "container".
+  paletteMargin = 25, // horizontal margin of the color palette inside the legend
   cellWidth = 4,      // Width of each individual cell.
   cellHeight = 40,    // Height of each individual cell.
   tipHeight = 50,     // Tooltip box size.
   xLabel = "Year",    // Horizontal Axis label.
   yLabel = "Month",   // Vertical Axis label.
+  paletteHeight = 20, // Height of the color palette.
+  paletteWidth = 25,  // Width of each cell in the color palette. 
   legendLabel = "Temperature color code";
-
-// =====================
-// Define Palette colors and size.
-// color source: https://colorbrewer2.org/#type=diverging&scheme=Spectral&n=10
-// =====================
-const colors = ['#9e0142','#d53e4f','#f46d43','#fdae61','#fee08b','#e6f598','#abdda4','#66c2a5','#3288bd','#5e4fa2'].reverse(),
-  paletteHeight = 20,   // Height of the color palette.
-  paletteWidth = 25 ;   // Width of the color palette. 
-
-// Other options to explore:
-// const 
-//   colorContin = d3.scaleSequential(d3.interpolateRdYlBu),
-//   colorDiscrete = d3.scaleOrdinal(d3.schemeRdYlBu);
 
 // =====================
 // File with source data
@@ -39,13 +37,14 @@ function getMonth(num) {
 // =====================
 // Create color palette (static)
 // =====================
+const colors = ['#9e0142','#d53e4f','#f46d43','#fdae61','#fee08b','#e6f598','#abdda4','#66c2a5','#3288bd','#5e4fa2'].reverse();
 const palette = d3.select('#palette');
 palette
   .selectAll('rect')
   .data(colors)
   .enter()
   .append('rect')
-  .attr('x', (d, i) => ( 1 + i) * paletteWidth)
+  .attr('x', (d, i) => paletteMargin + i * paletteWidth)
   .attr('width', paletteWidth)
   .attr('height', paletteHeight)
   .style('fill', (d) => d);
@@ -56,7 +55,7 @@ palette
 const tip = d3.select('#tooltip');
 
 // =====================
-// Dynamic operations with data from file
+// Retrieve data from file ==> dynamic code.
 // =====================
 fetch(dataFile)                    // Retrieve the remote file.
   .then(file => file.json())       // Create a JSON object with the response.
@@ -143,34 +142,30 @@ fetch(dataFile)                    // Retrieve the remote file.
     const               
       zMin = Math.floor(Math.min(...data.map(d => d.temp))),
       zMax = Math.ceil(Math.max(...data.map(d=> d.temp))),
-      step = (zMax - zMin) / colors.length;
-
-    // Assign color from palette to each element in data array
-    for(let i = 0; i < colors.length; i++) {      // Loop through colors.
-      data.forEach( (item) => {                   // Loop through data items. 
-        if (zMin + i * step < item.temp && item.temp <= zMin + (i + 1) * step) {item.color = colors[i];}
-      } );
-    }
-
-    // Scale the color codes in palette
-    const
-      zDomain = [zMin, zMax],                       // Domain values for linear scale [1, 14]
-      zRange  = [0, colors.length * paletteWidth],  // Range of coordinates.
+      step = (zMax - zMin) / colors.length,
+      zDomain = [zMin, zMax],                       // Domain values for Z-scale
+      zRange  = [0, colors.length * paletteWidth],  // Range of palette coordinates.
       zScale = d3.scaleLinear(zDomain, zRange),     // Scale values <-> coordinates.
-      zTicks = d3.range(colors.length + 1).map((i) => zMin + step * i),    
-      z_axis = d3.axisBottom()                      // Z-axis definition.
-        .scale(zScale)
+      zTicks = d3.range(colors.length + 1).map((i) => zMin + step * i),    // Array with tick values
+      z_axis = d3.axisBottom(zScale)                // Z-axis definition.
         .tickValues(zTicks)
         .tickFormat(d3.format(".1f"));
 
     palette.append('g')       // Create Z-axis
       .call(z_axis)
       .attr('id', 'z-axis')  
-      .attr('transform', 'translate(' + paletteWidth + ', ' + paletteHeight + ')');
+      .attr('transform', 'translate(' + paletteMargin + ', ' + paletteHeight + ')');
   
     // =====================
     // Create cells as rect elements.
     // =====================      
+    // Assign color from palette to each element in data array
+    for(let i = 0; i < colors.length; i++) {      // Loop through colors.
+      data.forEach( (item) => {                   // Loop through data items. 
+        if (zMin + i * step < item.temp && item.temp <= zMin + (i + 1) * step) {item.color = colors[i];}
+      } );
+    }    
+    
     chart
       .selectAll('rect')
       .data(data)
@@ -185,6 +180,7 @@ fetch(dataFile)                    // Retrieve the remote file.
       .attr('width', cellWidth)
       .attr('height', cellHeight)
       .style('fill', (d) => d.color)
+      
       // =============================================================
       // Show/hide tooltip
       // =============================================================          
