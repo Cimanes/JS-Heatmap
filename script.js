@@ -1,5 +1,5 @@
 // =====================
-// Discrete color palette
+// DDiscrete color palette
 // color source: https://colorbrewer2.org/#type=diverging&scheme=Spectral&n=10
 // Other options to explore:
 //   colorCont = d3.scaleSequential(d3.interpolateRdYlBu),
